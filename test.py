@@ -20,7 +20,7 @@
 
 # Imports
 import os
-import pset1
+import main
 import unittest
 
 # Diretório
@@ -30,8 +30,8 @@ TEST_DIRECTORY = os.path.dirname(__file__)
 # Classe para os testes de imagem:
 class TestImagem(unittest.TestCase):
     def test_carregar(self):
-        resultado = pset1.Imagem.carregar('test_images/centered_pixel.png')
-        esperado = pset1.Imagem(11, 11,
+        resultado = main.Imagem.carregar('test_images/centered_pixel.png')
+        esperado = main.Imagem(11, 11,
                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -49,9 +49,9 @@ class TestImagem(unittest.TestCase):
 # Classe para os testes de inversão:
 class TestInvertida(unittest.TestCase):
     def test_invertida_1(self):
-        im = pset1.Imagem.carregar('test_images/centered_pixel.png')
+        im = main.Imagem.carregar('test_images/centered_pixel.png')
         resultado = im.invertida()
-        esperado = pset1.Imagem(11, 11,
+        esperado = main.Imagem(11, 11,
                                 [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
                                  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
                                  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
@@ -67,10 +67,10 @@ class TestInvertida(unittest.TestCase):
 
     def test_invertida_2(self):
         
-        i = pset1.Imagem.carregar('./test_images/rowImgTeste.png')
+        i = main.Imagem.carregar('./test_images/rowImgTeste.png')
         resultado = i.invertida()
 
-        esperado = pset1.Imagem(4,1,[226,166,119,55])
+        esperado = main.Imagem(4,1,[226,166,119,55])
 
         esperado.mostrar()
 
@@ -81,8 +81,8 @@ class TestInvertida(unittest.TestCase):
             with self.subTest(f=nome_arquivo):
                 arquivo_entrada = os.path.join(TEST_DIRECTORY, 'test_images', '%s.png' % nome_arquivo)
                 arquivo_saida = os.path.join(TEST_DIRECTORY, 'test_results', '%s_invert.png' % nome_arquivo)
-                resultado = pset1.Imagem.carregar(arquivo_entrada).invertida()
-                esperado = pset1.Imagem.carregar(arquivo_saida)
+                resultado = main.Imagem.carregar(arquivo_entrada).invertida()
+                esperado = main.Imagem.carregar(arquivo_saida)
                 self.assertEqual(resultado,  esperado)
 
 
@@ -95,11 +95,11 @@ class TestFiltros(unittest.TestCase):
                     arquivo_entrada = os.path.join(TEST_DIRECTORY, 'test_images', '%s.png' % nome_arquivo)
                     arquivo_saida = os.path.join(TEST_DIRECTORY, 'test_results',
                                                  '%s_blur_%02d.png' % (nome_arquivo, tamanho_kernel))
-                    imagem_entrada = pset1.Imagem.carregar(arquivo_entrada)
-                    imagem_entrada_copia = pset1.Imagem(imagem_entrada.largura, imagem_entrada.altura,
+                    imagem_entrada = main.Imagem.carregar(arquivo_entrada)
+                    imagem_entrada_copia = main.Imagem(imagem_entrada.largura, imagem_entrada.altura,
                                                         imagem_entrada.pixels)
                     resultado = imagem_entrada.borrada(tamanho_kernel)
-                    esperado = pset1.Imagem.carregar(arquivo_saida)
+                    esperado = main.Imagem.carregar(arquivo_saida)
                     self.assertEqual(imagem_entrada, imagem_entrada_copia,
                                      "Cuidado para não modificar a imagem original!")
                     self.assertEqual(resultado,  esperado)
@@ -111,11 +111,11 @@ class TestFiltros(unittest.TestCase):
                     arquivo_entrada = os.path.join(TEST_DIRECTORY, 'test_images', '%s.png' % nome_arquivo)
                     arquivo_saida = os.path.join(TEST_DIRECTORY, 'test_results',
                                                  '%s_sharp_%02d.png' % (nome_arquivo, tamanho_kernel))
-                    imagem_entrada = pset1.Imagem.carregar(arquivo_entrada)
-                    imagem_entrada_copia = pset1.Imagem(imagem_entrada.largura, imagem_entrada.altura,
+                    imagem_entrada = main.Imagem.carregar(arquivo_entrada)
+                    imagem_entrada_copia = main.Imagem(imagem_entrada.largura, imagem_entrada.altura,
                                                         imagem_entrada.pixels)
                     resultado = imagem_entrada.focada(tamanho_kernel)
-                    esperado = pset1.Imagem.carregar(arquivo_saida)
+                    esperado = main.Imagem.carregar(arquivo_saida)
                     self.assertEqual(imagem_entrada, imagem_entrada_copia,
                                      "Cuidado para não modificar a imagem original!")
                     self.assertEqual(resultado,  esperado)
@@ -125,11 +125,11 @@ class TestFiltros(unittest.TestCase):
             with self.subTest(f=nome_arquivo):
                 arquivo_entrada = os.path.join(TEST_DIRECTORY, 'test_images', '%s.png' % nome_arquivo)
                 arquivo_saida = os.path.join(TEST_DIRECTORY, 'test_results', '%s_edges.png' % nome_arquivo)
-                imagem_entrada = pset1.Imagem.carregar(arquivo_entrada)
-                imagem_entrada_copia = pset1.Imagem(imagem_entrada.largura, imagem_entrada.altura,
+                imagem_entrada = main.Imagem.carregar(arquivo_entrada)
+                imagem_entrada_copia = main.Imagem(imagem_entrada.largura, imagem_entrada.altura,
                                                     imagem_entrada.pixels)
                 resultado = imagem_entrada.bordas()
-                esperado = pset1.Imagem.carregar(arquivo_saida)
+                esperado = main.Imagem.carregar(arquivo_saida)
                 self.assertEqual(imagem_entrada, imagem_entrada_copia,
                                  "Cuidado para não modificar a imagem original!")
                 self.assertEqual(resultado,  esperado)
