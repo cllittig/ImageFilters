@@ -66,8 +66,15 @@ class TestInvertida(unittest.TestCase):
         self.assertEqual(resultado,  esperado)
 
     def test_invertida_2(self):
-        # Escreva aqui o seu caso de teste
-        self.assertTrue(False)
+        
+        i = pset1.Imagem.carregar('./test_images/rowImgTeste.png')
+        resultado = i.invertida()
+
+        esperado = pset1.Imagem(4,1,[226,166,119,55])
+
+        esperado.mostrar()
+
+        self.assertEqual(resultado, esperado)
 
     def test_imagens_invertidas(self):
         for nome_arquivo in ('mushroom', 'twocats', 'chess'):
@@ -131,3 +138,4 @@ class TestFiltros(unittest.TestCase):
 if __name__ == '__main__':
     res = unittest.main(verbosity=3, exit=False)
 
+    

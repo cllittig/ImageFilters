@@ -55,6 +55,9 @@ class Imagem:
         self.pixels[index] = c
 
     def aplicar_por_pixel(self, func):
+
+        # aplica um valor em cada pixel
+
         resultado = Imagem.nova(self.largura, self.altura)
         for y in range(self.altura):
             for x in range(self.largura):
@@ -104,7 +107,12 @@ class Imagem:
 
     
     def subImagem(self, subtraendo):
+        '''
+        Explicação da função: subtrai duas imagens
 
+        input: self, subtraendo
+        output: Imagem
+        '''
         if self.altura != subtraendo.altura or self.largura != subtraendo.largura:
             raise Exception("imagens de tamanhos diferentes")
         
@@ -123,6 +131,13 @@ class Imagem:
         return resultado
 
     def mulImgEscalar( self, escalar):
+
+        '''
+        Explicação da função: mulitplica uma imagem por um escalar
+
+        input: self, escalar
+        output: Imagem
+        '''
 
         resultado = Imagem.nova(self.largura, self.altura)
 
@@ -146,9 +161,17 @@ class Imagem:
       output: Imagem
       '''     
       return self.aplicar_por_pixel(lambda c: 255 - c)
-
-   
+       
     def borrada(self, n):
+
+        '''
+        Explicação da função: calcula e aplica um kernel na imagem ppara deixa-la borradapodendo ficar mais borrada dependendo do valor de n
+
+        input: self, n
+        output: Imagem
+        '''
+
+        
         valor = 1/(n*n)
         kernel =[n,n,[valor] * (n*n)]
         
@@ -169,6 +192,12 @@ class Imagem:
         return resultado
 
     def focada(self, n):
+        '''
+        Explicação da função: borra a imagem, em seguida, pega a original e multiplica por dois e por ultimo a subtrai da borrada
+
+        input: self, n
+        output: Imagem
+        '''
         borrada = self.borrada(n)
 
         selfMultiplicada = self.mulImgEscalar(2)
@@ -178,62 +207,88 @@ class Imagem:
 
         return resultado
 
-    # def bordas(self):
-        
-    #     resultado = Imagem.nova(self.largura, self.altura)
-
-    #     kernelX = [3,3,[ -1,0,1
-    #                     ,-2,0,2
-    #                     ,-1,0,1]]
-    #     kernelY = [3,3,[ -1,-2,-1
-    #                      ,0,0,0
-    #                      ,1,2,1]]
-
-    #     imagemX = self.aplicarKernel(kernelX)
-    #     imagemY = self.aplicarKernel(kernelY)
-
-    #     for y in range(self.altura):
-    #         for x in range(self.largura):
-    #             valorX = (imagemX.get_pixel(x,y)) **2
-    #             valorY = (imagemY.get_pixel(x,y)) **2
-
-    #             valor = int((valorX + valorY) ** 0.5)
-
-    #             if(valor < 0):
-    #                 valor = 0
-    #             elif(valor > 255):
-    #                 valor = 255
-                
-    #             resultado.set_pixel(x,y, valor)
-
-    #     return resultado
     def bordas(self):
-        # Criando uma nova imagem para armazenar o resultado
+        
+        '''
+            Explicação da função: calcula as bordas da imagem usando o operador Sobel.
+
+            A função aplica o operador Sobel, usando duas matrizes de convolução (kernels) para detectar bordas nos eixos horizontal (X) e 
+            vertical (Y), identificando contornos na imagem onde há mudanças significativas de brilho.
+
+
+        input: self
+        output: Imagem
+        '''
+
         resultado = Imagem.nova(self.largura, self.altura)
 
-        # Definindo os kernels de Sobel para as direções X e Y
-        kernelX = [3, 3, [-1, 0, 1, -2, 0, 2, -1, 0, 1]]
-        kernelY = [3, 3, [-1, -2, -1, 0, 0, 0, 1, 2, 1]]
+        kernelX = [3,3,[ -1,0,1
+                         ,-2,0,2
+                         ,-1,0,1]]
+        
+        kernelY = [3,3,[ -1,-2,-1
+                          ,0,0,0
+                          ,1,2,1]]
 
-        # Aplicando os kernels em X e Y
-        imagemX = self.aplicarKernel(kernelX)
-        imagemY = self.aplicarKernel(kernelY)
 
-        # Iterando sobre cada pixel para calcular a magnitude do gradiente
+        imagemX = Imagem.nova(self.largura, self.altura)
+        imagemY = Imagem.nova(self.largura, self.altura)
+
+        tamanhoKernel = kernelX[0]
+
+        kernel_dadosX = kernelX[2]
+        kernel_dadosY  = kernelY[2]
+
+        imagem_altura = self.altura 
+        imagem_largura = self.largura
+        offset = tamanhoKernel // 2
+
+        for y in range(imagem_altura):
+            for x in range(imagem_largura):
+                soma = 0.0
+
+                for ky  in range(-offset, offset+1):
+                    for kx in range(-offset, offset+1):
+                        pixel_x = x + kx
+                        pixel_y = y + ky
+
+                        valor_pixel = self.get_pixel(pixel_x, pixel_y)
+                        valor_kernel = kernel_dadosX[(ky + offset) * tamanhoKernel + (kx + offset)]
+                        soma += valor_pixel * valor_kernel
+
+                imagemX.set_pixel(x, y, soma)
+
+        for y in range(imagem_altura):
+            for x in range(imagem_largura):
+                soma = 0.0
+
+                for ky  in range(-offset, offset+1):
+                    for kx in range(-offset, offset+1):
+                        pixel_x = x + kx
+                        pixel_y = y + ky
+
+                        valor_pixel = self.get_pixel(pixel_x, pixel_y)
+                        valor_kernel = kernel_dadosY[(ky + offset) * tamanhoKernel + (kx + offset)]
+                        soma += valor_pixel * valor_kernel
+
+                imagemY.set_pixel(x, y, soma)
+
         for y in range(self.altura):
             for x in range(self.largura):
-                # Calcula o gradiente em X e Y e combina as magnitudes
-                valorX = imagemX.get_pixel(x, y) ** 2
-                valorY = imagemY.get_pixel(x, y) ** 2
-                magnitude = round((valorX + valorY) ** 0.5)
+                valorX = (imagemX.get_pixel(x,y)) **2
+                valorY = (imagemY.get_pixel(x,y)) **2
 
-                # Limitando o valor ao intervalo de 0 a 255
-                magnitude = min(max(magnitude, 0), 255)
+                valor = int(round((valorX + valorY) ** 0.5))
 
-                # Definindo o valor na imagem de resultado
-                resultado.set_pixel(x, y, magnitude)
+                if(valor < 0):
+                    valor = 0
+                elif(valor > 255):
+                    valor = 255
+                
+                resultado.set_pixel(x,y, valor)
 
         return resultado
+    
 
     # Abaixo deste ponto estão utilitários para carregar, salvar e mostrar
     # as imagens, bem como para a realização de testes. Você deve ler as funções
@@ -394,69 +449,30 @@ if __name__ == '__main__':
         tk_root.mainloop()
  
 
-#     kernel = [3, 3, [
-#     0.0, 0.2, 0.0,
-#     0.2, 0.2, 0.2,
-#     0.0, 0.2, 0.0
-# ]]
-    # kernel = [
-    # 3, 3, [
-    #     0, -1,  0,
-    #    -1,  4, -1,
-    #     0, -1,  0
-    # ]
-    # ]   
-
-    kernelX = [3,3,[ -1,0,1
-                        ,-2,0,2
-                        ,-1,0,1]]
-    kernelY = [3,3,[ -1,-2,-1
-                         ,0,0,0
-                         ,1,2,1]]
+    #questão dois
+    img = Imagem.carregar("./test_images/bluegill.png")
+    img = img.invertida()    
+    img.salvar("./test_results/bluegillResultadoQ2.png")
     
 
-    i = Imagem.carregar('./test_images/twocats.png')
-    e = Imagem.carregar('./test_images/twocats.png')
+    #questão quatro
 
-    u = i.bordas()
+    kernel = [9, 9, [
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]]
+
+    img4 = Imagem.carregar("./test_images/pigbird.png")
+    img4 = img4.aplicarKernel(kernel)
+    img4.salvar("./test_results/pigbirdResultadoQ4.png")
 
     
-
-    u.salvar('./test_results/twocatsTesteBordas.png')
-    
-
-    
-
-
-#     i = Imagem.carregar('./test_images/pigbird.png')
-
-#     resultado = i.aplicarKernel(kernel)
-
-
-#     resultado.salvar('./test_images/pigbirdTEsteK.png')
-    
-
-
-
-
-    '''KERNEL DE TESTE - QUESTÃO DOIS'''
-    # kernel = [3,3,[
-    #                 0.00,-0.07,0.00,
-    #                 -0.45,1.20,-0.25,
-    #                 0.00,-0.12,0.00
-    #             ]
-    #         ]
-    
-    # imagemTeste = Imagem(3,3,[
-    #                     80, 53, 99,
-    #                     192,127,148,
-    #                     175,174,193]
-    #             )
-    
-    # imagemTeste.mostrar()
-
-    # resultadoKernel = imagemTeste.aplicarKernel(kernel)
-
-    # print(resultadoKernel)
 
     
